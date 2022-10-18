@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:notas_diarias/models/annotation.dart';
+import '../helpers/annotation_helper.dart';
 
 class exibirTela extends StatelessWidget {
   TextEditingController _tituloController = TextEditingController();
   TextEditingController _descricaoController = TextEditingController();
+  var _db = AnotacaoHelper();
+
+  _salvarAnotacao() async {
+    String titulo = _tituloController.text;
+    String descricao = _descricaoController.text;
+
+    Anotacao anotacao = Anotacao(titulo, descricao, DateTime.now().toString());
+    int? resultado = await _db.salvarAnotacao(anotacao);
+  }
 
   @override
   Widget build(BuildContext context) {
