@@ -86,7 +86,7 @@ class _homePageState extends State<homePage> {
               ),
               TextButton(
                 onPressed: () {
-                  _salvarAtualizarAnotacao();
+                  _salvarAtualizarAnotacao(anotacaoSelecionada: anotacao);
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -100,6 +100,67 @@ class _homePageState extends State<homePage> {
             ],
           );
         });
+  }
+
+  Widget criarItemLista(context, index) {
+    final anotacao = _anotacoes[index];
+
+    return Dismissible(
+        key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+        direction: DismissDirection.endToStart,
+        onDismissed: (direction) {
+          _removerAnotacao(anotacao.id ?? 0);
+
+          final snackBar = SnackBar(
+            duration: Duration(seconds: 5),
+            content: Text("Tarefa removida"),
+            action: SnackBarAction(
+                label: 'Desfazer',
+                onPressed: () {
+                  setState(() {
+                    _recuperarAnotacoes();
+                  });
+                  _salvarAtualizarAnotacao();
+                }),
+          );
+
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        },
+        background: Container(
+          color: Colors.red,
+          padding: EdgeInsets.all(16),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            )
+          ]),
+        ),
+        child: Card(
+          child: ListTile(
+            title: Text(anotacao.titulo ?? ""),
+            subtitle: Text(
+                "${_formatarData(anotacao.data ?? "")} - ${anotacao.descricao}"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    _exibirTelaCadastro(anotacao: anotacao);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   _recuperarAnotacoes() async {
@@ -182,47 +243,9 @@ class _homePageState extends State<homePage> {
         children: <Widget>[
           Expanded(
               child: ListView.builder(
-                  itemCount: _anotacoes.length,
-                  itemBuilder: (context, index) {
-                    final anotacao = _anotacoes[index];
-
-                    return Card(
-                      child: ListTile(
-                        title: Text(anotacao.titulo ?? ""),
-                        subtitle: Text(
-                            "${_formatarData(anotacao.data ?? "")} - ${anotacao.descricao}"),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                _exibirTelaCadastro(anotacao: anotacao);
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                _removerAnotacao(anotacao.id ?? 0);
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 0),
-                                child: Icon(
-                                  Icons.remove_circle,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }))
+            itemCount: _anotacoes.length,
+            itemBuilder: criarItemLista,
+          ))
         ],
       ),
     );
