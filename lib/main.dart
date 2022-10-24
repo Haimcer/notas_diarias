@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notas_diarias/pages/home_page.dart';
-// ignore: unused_import
+
 import 'package:notas_diarias/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
             themeMode: themeProvider.themeMode,
             theme: Mythemes.lightTheme,
             darkTheme: Mythemes.darkTheme,
-            home: const homePage(),
+            home: homePage(),
             debugShowCheckedModeBanner: false,
           );
         },
